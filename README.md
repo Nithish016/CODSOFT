@@ -24,7 +24,12 @@ A platform connecting employers and job seekers.
 - **Tech Stack**: React, Node.js.
 - **Features**: Job listings, Application tracking, Dashboard.
 
-### 5. [Calculator](./calculator)
+### 5. [Personal Portfolio](./mainpage.html)
+A professional portfolio showcasing skills, projects, and contact information.
+- **Tech Stack**: HTML5, Vanilla CSS.
+- **Features**: Responsive design, Multiple sections (About, Skills, Projects, Resume).
+
+### 6. [Calculator](./calculator)
 An interactive calculator for basic arithmetic operations.
 - **Tech Stack**: HTML, CSS, JavaScript.
 - **Features**: CSS Grid layout, Interactive UI.

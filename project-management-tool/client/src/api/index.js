@@ -1,18 +1,83 @@
-import axios from 'axios';
+// Local Storage based API implementation for easy deployment without a backend server
 
-const API = axios.create({
-    baseURL: 'http://localhost:5000/api'
-});
+const getStorageItem = (key) => {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : [];
+};
 
-export const fetchProjects = () => API.get('/projects');
-export const createProject = (newProject) => API.post('/projects', newProject);
-export const updateProject = (id, updatedProject) => API.put(`/projects/${id}`, updatedProject);
-export const deleteProject = (id) => API.delete(`/projects/${id}`);
-export const getProjectDetails = (id) => API.get(`/projects/${id}`);
+const setStorageItem = (key, data) => {
+    localStorage.setItem(key, JSON.stringify(data));
+};
 
-export const fetchTasks = (projectId) => API.get(`/tasks/project/${projectId}`);
-export const createTask = (newTask) => API.post('/tasks', newTask);
-export const updateTask = (id, updatedTask) => API.put(`/tasks/${id}`, updatedTask);
-export const deleteTask = (id) => API.delete(`/tasks/${id}`);
+export const fetchProjects = () => {
+    const projects = getStorageItem('proManage_projects');
+    return Promise.resolve({ data: projects });
+};
 
-export default API;
+export const createProject = (newProject) => {
+    const projects = getStorageItem('proManage_projects');
+    const project = {
+        ...newProject,
+        _id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+    };
+    projects.push(project);
+    setStorageItem('proManage_projects', projects);
+    return Promise.resolve({ data: project });
+};
+
+export const getProjectDetails = (id) => {
+    const projects = getStorageItem('proManage_projects');
+    const project = projects.find(p => p._id === id);
+    return Promise.resolve({ data: project });
+};
+
+export const deleteProject = (id) => {
+    let projects = getStorageItem('proManage_projects');
+    projects = projects.filter(p => p._id !== id);
+    setStorageItem('proManage_projects', projects);
+
+    let tasks = getStorageItem('proManage_tasks');
+    tasks = tasks.filter(t => t.project !== id);
+    setStorageItem('proManage_tasks', tasks);
+
+    return Promise.resolve({ data: { message: 'Project deleted' } });
+};
+
+export const fetchTasks = (projectId) => {
+    const tasks = getStorageItem('proManage_tasks');
+    const projectTasks = tasks.filter(t => t.project === projectId);
+    return Promise.resolve({ data: projectTasks });
+};
+
+export const createTask = (newTask) => {
+    const tasks = getStorageItem('proManage_tasks');
+    const task = {
+        ...newTask,
+        _id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+    };
+    tasks.push(task);
+    setStorageItem('proManage_tasks', tasks);
+    return Promise.resolve({ data: task });
+};
+
+export const updateTask = (id, updatedTask) => {
+    const tasks = getStorageItem('proManage_tasks');
+    const index = tasks.findIndex(t => t._id === id);
+    if (index !== -1) {
+        tasks[index] = { ...tasks[index], ...updatedTask };
+        setStorageItem('proManage_tasks', tasks);
+        return Promise.resolve({ data: tasks[index] });
+    }
+    return Promise.reject(new Error('Task not found'));
+};
+
+export const deleteTask = (id) => {
+    let tasks = getStorageItem('proManage_tasks');
+    tasks = tasks.filter(t => t._id !== id);
+    setStorageItem('proManage_tasks', tasks);
+    return Promise.resolve({ data: { message: 'Task deleted' } });
+};
+
+export default {};

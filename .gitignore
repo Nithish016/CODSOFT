@@ -3,8 +3,5 @@ node_modules/
 dist/
 build/
 *.zip
-*.jpeg
-*.jpg
-*.pdf
 .DS_Store
 .vscode/
